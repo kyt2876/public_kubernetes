@@ -1,7 +1,7 @@
-cd ~/kube
+cd ~/public_kubernetes
 git add *
-git commit -m "Add: home 2022"
+git commit -m "$(date)"
 git status
-git push -u kube master
+git push -u origin main
 sleep 5
 git ls-files
