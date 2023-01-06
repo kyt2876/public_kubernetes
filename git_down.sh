@@ -1,3 +1,4 @@
 cd ~/kube
 git remote -v
-git pull kube master
+#git pull origin main
+git pull
