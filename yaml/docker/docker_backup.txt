@@ -1,0 +1,44 @@
+https://m.blog.naver.com/chandong83/221006388637
+## 백업전 커밋하기
+docker ps -a    # 이미지들 확인 한 후
+docker commit -p b2121b567c28    # b2121b567c28 컨테이너 커밋
+
+### 도커 저장
+docker save -o [저장할이름].tar [이미지 이름]
+## 컨테이너 백업 
+docker save -o docker-statsd-influxdb-grafan_20220610.tar samuelebistoletti/docker-statsd-influxdb-grafana:latest
+
+## 컨테이너 복원 
+docker load -i < [백업한 파일이름].tar
+docker load  -i docker-statsd-influxdb-grafan_20220610.tar    # 복원하기
+
+https://mosei.tistory.com/entry/Docker-%EB%82%98%EC%9D%98-%EC%BB%A8%ED%85%8C%EC%9D%B4%EB%84%88-%EB%B0%B1%EC%97%85%ED%95%98%EA%B8%B0
+## 도커 허브에 백업및 복원 
+1. dockerhub에서 해당 이미지를 관리할 레포지토리 생성
+https://hub.docker.com/repositories
+
+2 컨테이너를 commit 해서 hub에 올릴 image를 생성
+# image 이름은 dockerhub에 생성한 레포지토리와 동일한 이름으로 맞춰야 함
+# tag는 1.0, latest 등 본인의 전략대로
+docker commit container dockingmosei/laravel8:latest
+# image가 잘 만들어졌는지 확인
+$ docker images
+
+3. 생성한 image를 dockerhub 로 push
+# dockerhub 계정으로 login
+docker login
+
+# dockerhub 로 이미지 push
+# 레포지토리명과 이미지명이 동일하게 한 이유
+docker push dockingmosei/laravel8:latest
+
+4. image를 다운받아서 사용
+- 기존 image를 삭제
+docker rmi --force dockingmosei/laravel8:latest
+
+# 이미지 다운로드
+$ docker pull dockingmosei/laravel8:latest
+
+# 컨테이너 생성 후 접속
+$ docker run -it -d -p 80:80 --privileged --name new_container dockingmosei/laravel8:latest /sbin/init
+$ docker exec -it new_container bash
