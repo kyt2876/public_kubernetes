@@ -1,0 +1,104 @@
+yum install yum-utils
+yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+yum install docker-ce
+systemctl status firewalld
+systemctl stop firewalld
+systemctl disable firewalld
+systemctl is-enabled firewalld
+
+systemctl status docker
+systemctl start docker
+systemctl list-unit-files | egrep -i fire
+
+docker --version
+
+https://techexpert.tips/ko/grafana-ko/ubuntu-linux%EC%97%90%EC%84%9C-grafana-docker-%EC%84%A4%EC%B9%98/
+## 도커 이미지 검색
+docker search grafana/grafana
+# grafana 도커 설치 
+docker pull grafana/grafana
+
+docker images
+
+mkdir /var/lib/grafana -p
+chown -R 472:472 /var/lib/grafana
+
+docker run -d -p 3000:3000 -v /var/lib/grafana:/var/lib/grafana -e "GF_SECURITY_ADMIN_PASSWORD=kamisama123" grafana/grafana
+## 도커 리스트 확인 
+docker container ls -a
+docker container stop acde6cf3b0cd
+docker container start acde6cf3b0cd
+##acde6cf3b0cd 컨테이너 프로세스 확인 
+docker ps -a -f id=acde6cf3b0cd
+## 로그확인 
+docker logs acde6cf3b0cd
+
+
+http://192.168.0.14:3000 
+admin / kamisama123 -> dpswpf1004 로변경 
+
+## docker 내부내부 들어가기 
+docker exec -it acde6cf3b0cd bash
+
+https://dev-t-blog.tistory.com/38
+## 도커설치 influxdb grafana
+docker pull samuelebistoletti/docker-statsd-influxdb-grafana
+. 설치가 완료되었으면 해당 이미지로 컨테이너로 만들어 실행합니다. 포트 3003 
+docker run --ulimit nofile=66000:66000 -d -it --name docker-statsd-influxdb-grafana -p 3003:3003 -p 3004:8888 -p 8086:8086 -p 22022:22 -p 8125:8125/udp samuelebistoletti/docker-statsd-influxdb-grafana:latest
+
+http://192.168.0.14:3003
+root /root 
+docker container ls -a
+docker exec -it b2121b567c28 bash
+
+1. docker-compose 및 데이터 경로 생성
+# root 권한으로 작성한다. EC2 생성 시 /data 경로 필요
+ 
+cd /data
+mkdir -p /data/inftelegra/influxdb2/config
+mkdir -p /data/inftelegra/influxdb2/data
+mkdir -p /data/inftelegra/grafana/etc_grafana
+mkdir -p /data/inftelegra/grafana/var_lib_grafana
+mkdir -p /data/inftelegra/telegraf/
+chown -R 472:472 /data/inftelegra/grafana/
+#######################################################
+vi /data/inftelegra/docker-compose.yml
+# telegraf는 http API 8086 으로 호출 
+version: '3.6' 
+services:
+ influxdb2:
+ image: influxdb:2.0.8-alpine
+ container_name: influxdb2
+ ports: - 8086:8086
+ volumes:
+ - type: bind
+ source: /data/inftelegra/influxdb2/data
+ target: /var/lib/influxdb2
+ - type: bind
+ source: /data/inftelegra/influxdb2/config
+ target: /etc/influxdb2
+
+ restart: always
+ grafana:
+ image: grafana/grafana:8.1.2
+ container_name: grafana
+ ports: 
+- 3000:3000 environment:
+ - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
+ volumes:
+ - /data/inftelegra/grafana/var_lib_grafana:/var/lib/grafana
+ - /data/inftelegra/grafana/etc_grafana/grafana.ini:/etc/grafana/grafana.ini:ro
+ restart: always
+ telegraf: image: telegraf:1.19.3
+ container_name: telegraf
+ # ports:
+ # - 8092:8092
+ # - 8094:8094
+ # - 8125:8125
+ volumes: - /data/inftelegra/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+ restart: always
+#################################################################
+
+docker-compose config
+출처: https://enowy.tistory.com/12 [Enowy]
+출처: https://enowy.tistory.com/12 [Enowy]
