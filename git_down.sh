@@ -1,3 +1,4 @@
-cd ~/kube
+cd ~/public_kubernetes
 git remote -v
-git pull kube master
+git pull -u origin main
+
