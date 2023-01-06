@@ -1,5 +1,5 @@
 cd ~/public_kubernetes
-git add *
+git add -A
 git commit -m "$(date) home"
 git status
 git push -u origin main
